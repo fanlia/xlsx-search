@@ -18,7 +18,7 @@ def format_lines(lines):
     result = ''
 
     for (dirpath, filename, i, line) in lines:
-        result += dirpath + ' ' + filename + ' ' + str(i) + ' ' + line
+        result += filename + ' ' + str(i) + ' ' + line
 
     return result
 
@@ -34,6 +34,7 @@ def search_xlsx(text, xlsxpath):
         if line.find(text) == -1:
             continue
         results.append((i, line))
+        i += 1
 
     return results
 
@@ -62,13 +63,14 @@ def search():
     if len(directory) == 0:
         return
 
+    label.config(text='正在搜索...')
     result = search_dir(text, directory)
     label.config(text=result)
 
 keyword = Entry(win)
-keyword.grid(row=0)
-btn = Button(win, text='搜索', command=search).grid(row=0, column=1)
-label = Label(win, text='请输入关键字', justify='left')
-label.grid(row=1, column=0)
+keyword.place(x=0, y=0, width=200, height=30)
+btn = Button(win, text='搜索', command=search).place(x=200, y=0, width=50, height=30)
+label = Label(win, text='请输入关键字', anchor='nw', justify='left')
+label.place(x=0, y=40)
 
 win.mainloop()
