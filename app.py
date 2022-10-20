@@ -2,6 +2,7 @@
 
 import os
 import io
+import threading
 from xlsx2csv import Xlsx2csv
 from tkinter import *
 from tkinter.filedialog import *
@@ -50,7 +51,8 @@ def search_dir(text, directory):
             for (i, line) in file_lines:
                 lines.append((dirpath, filename, i, line))
 
-    return format_lines(lines)
+    result = format_lines(lines)
+    label.config(text=result)
 
     # return text + ' ' + directory
 
@@ -64,8 +66,7 @@ def search():
         return
 
     label.config(text='正在搜索...')
-    result = search_dir(text, directory)
-    label.config(text=result)
+    threading.Thread(target=search_dir, args=(text, directory)).start()
 
 keyword = Entry(win)
 keyword.place(x=0, y=0, width=200, height=30)
