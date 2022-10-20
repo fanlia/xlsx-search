@@ -26,7 +26,7 @@ __author__ = "Dilshod Temirkhodjaev <tdilshod@gmail.com>"
 __license__ = "MIT"
 __version__ = "0.8"
 
-import csv, datetime, zipfile, string, sys, os, re, signal
+import csv, datetime, zipfile, sys, os, re, signal
 import xml.parsers.expat
 from xml.dom import minidom
 
@@ -129,9 +129,6 @@ CONTENT_TYPES = {
 
 DEFAULT_APP_PATH = "/xl"
 DEFAULT_WORKBOOK_PATH = DEFAULT_APP_PATH + "/workbook.xml"
-
-def eprint(*args, **kwargs):
-    print(*args, file=sys.stderr, **kwargs)
 
 class XlsxException(Exception):
     pass
@@ -814,15 +811,15 @@ class Sheet:
 
                 if format_str in FORMATS:
                     format_type = FORMATS[format_str]
-                elif re.match("^\d+(\.\d+)?$", self.data) and re.match(".*[hsmdyY]", format_str) and not re.match(
+                elif re.match(r"^\d+(\.\d+)?$", self.data) and re.match(".*[hsmdyY]", format_str) and not re.match(
                         '.*\[.*[dmhys].*\]', format_str):
                     # it must be date format
                     if float(self.data) < 1:
                         format_type = "time"
                     else:
                         format_type = "date"
-                elif re.match("^-?\d+(.\d+)?$", self.data) or (
-                            self.scifloat and re.match("^-?\d+(.\d+)?([eE]-?\d+)?$", self.data)):
+                elif re.match(r"^-?\d+(.\d+)?$", self.data) or (
+                            self.scifloat and re.match(r"^-?\d+(.\d+)?([eE]-?\d+)?$", self.data)):
                     format_type = "float"
                 if format_type == 'date' and self.dateformat == 'float':
                     format_type = "float"
@@ -871,7 +868,8 @@ class Sheet:
                         self.data = ("%f" % (float(self.data))).rstrip('0').rstrip('.')
 
                 except (ValueError, OverflowError):  # this catch must be removed, it's hiding potential problems
-                    raise XlsxValueError("Error: potential invalid date format.")
+                    # raise XlsxValueError("Error: potential invalid date format.")
+                    pass
 
     def handleStartElement(self, name, attrs):
         has_namespace = name.find(":") > 0
@@ -908,9 +906,9 @@ class Sheet:
         elif name == 'dimension':
             rng = attrs.get("ref").split(":")
             if len(rng) > 1:
-                start = re.match("^([A-Z]+)(\d+)$", rng[0])
+                start = re.match(r"^([A-Z]+)(\d+)$", rng[0])
                 if (start):
-                    end = re.match("^([A-Z]+)(\d+)$", rng[1])
+                    end = re.match(r"^([A-Z]+)(\d+)$", rng[1])
                     startCol = start.group(1)
                     endCol = end.group(1)
                     self.columns_count = 0
@@ -995,8 +993,8 @@ class Sheet:
         if len(rng) == 1:
             yield rangeStr
         else:
-            start = re.match("^([A-Z]+)(\d+)$", rng[0])
-            end = re.match("^([A-Z]+)(\d+)$", rng[1])
+            start = re.match(r"^([A-Z]+)(\d+)$", rng[0])
+            end = re.match(r"^([A-Z]+)(\d+)$", rng[1])
             if not start or not end:
                 return
             startCol = start.group(1)

@@ -12,10 +12,13 @@ win.title('xlsx 查找小工具')
 win.geometry('300x150')
 
 def format_lines(lines):
+    if len(lines) == 0:
+        return '没有找到数据'
+
     result = ''
 
-    for (filename, i, line) in lines:
-        result += filename + ' ' + str(i) + ' ' + line
+    for (dirpath, filename, i, line) in lines:
+        result += dirpath + ' ' + filename + ' ' + str(i) + ' ' + line
 
     return result
 
@@ -44,7 +47,7 @@ def search_dir(text, directory):
                 continue
             file_lines = search_xlsx(text, os.path.join(dirpath, filename))
             for (i, line) in file_lines:
-                lines.append((filename, i, line))
+                lines.append((dirpath, filename, i, line))
 
     return format_lines(lines)
 
@@ -56,6 +59,9 @@ def search():
         return
 
     directory = askdirectory(title='请选择包含xlsx的文件夹')
+    if len(directory) == 0:
+        return
+
     result = search_dir(text, directory)
     label.config(text=result)
 
