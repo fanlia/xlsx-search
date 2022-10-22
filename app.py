@@ -47,9 +47,12 @@ def search_dir(text, directory):
         for filename in filenames:
             if not filename.endswith('.xlsx'):
                 continue
-            file_lines = search_xlsx(text, os.path.join(dirpath, filename))
-            for (i, line) in file_lines:
-                lines.append((dirpath, filename, i, line))
+            try:
+                file_lines = search_xlsx(text, os.path.join(dirpath, filename))
+                for (i, line) in file_lines:
+                    lines.append((dirpath, filename, i, line))
+            except:
+                pass
 
     result = format_lines(lines)
     label.config(text=result)
